@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+  <link rel="stylesheet" href="css/styles.css">
+  <title>Restaurant Reviews</title>
+</head>
+
+<body tabindex="-1">
+  <header>
+    <nav>
+      <h1><a href="/">Restaurant Reviews</a></h1>
+    </nav>
+  </header>
+
+  <main id="maincontent">
+    <section id="map-container" role="map" tabindex="-1">
+      <div id="map" tabindex="-1" aria-hidden="true"></div>
+    </section>
+    <section tabindex="-1">
+      <div class="filter-options flex-container" tabindex="-1">
+        <h2>Filter Results</h2>
+        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="Choose neighborhood">
+          <option value="all">All Neighborhoods</option>
+        </select>
+        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="Choose cuisine">
+          <option value="all">All Cuisines</option>
+        </select>
+      </div>
+      
+      <ul id="restaurants-list" class="grid" role="presentation" tabindex="-1"></ul>
+      
+    </section>
+
+    <div id="toast" tabindex="-1">
+      <div class="toast-message-container">
+        <div class="toast-message-container-body">
+            <div id="desc">An update available..</div>
+            <div class="toast-buttons">
+              <button class="toast-button" data-title="refresh">refresh</button>
+              <button class="toast-button" data-title="dismiss">dismiss</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script charset="utf-8" src="js/dbhelper.js"></script>
+  <script charset="utf-8" src="js/main.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCH6DVFw73kW7ZuyWATZkAay2bLtDRC79Q&libraries=places&callback=initMap"></script>
+
+
+  <footer id="footer">
+    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+  </footer>
+
+</body>
+
+</html>
