@@ -357,7 +357,7 @@ nav.breadCrumb {
   height: auto;
 }
 
-ul#breadcrumb {
+ol#breadcrumb {
   display: flex;
   justify-content: flex-start;
   width: 100%;
