@@ -167,7 +167,7 @@ nav h1 a {
 #restaurants-list .restaurant-img:hover {
   transform: scale(1.1);
 }
-#restaurants-list li h1 {
+#restaurants-list li h2 {
   color: #f18200;
   font-family: Arial,sans-serif;
   font-size: 14pt;
@@ -205,7 +205,7 @@ nav h1 a {
 /* ====================== Restaurant Details ====================== */
 
 .inside #maincontent {
-  margin-top: 130px;
+  margin-top: 120px;
 }
 .inside header {
   position: fixed;
@@ -351,7 +351,17 @@ nav h1 a {
   background-color: #807d7dde;
 }
 
+nav.breadCrumb {
+  display: flex;
+  align-items: center;
+  height: auto;
+}
 
+ul#breadcrumb {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
 /* ================= main page ================= */
 .grid{
   display: grid;
