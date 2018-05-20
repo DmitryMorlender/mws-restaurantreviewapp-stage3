@@ -11,12 +11,12 @@
     '/',
     '/css/styles.css',
     '/js/main.js',
+    '/js/idb.js',
     '/js/dbhelper.js',
     '/js/restaurant_info.js',
     '/index.html',
     '/restaurant.html',
     'error.html',
-    '/data/restaurants.json'
   ];
   
   self.addEventListener('install', function(event) {
@@ -45,7 +45,7 @@
   });
   
   self.addEventListener('fetch', function(event) {
-   //
+   // 
       event.respondWith(
           caches.open(CACHE_NAME).then(function(cache) {
             return cache.match(event.request).then(function(response) {

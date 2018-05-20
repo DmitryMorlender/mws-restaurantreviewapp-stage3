@@ -10,7 +10,7 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   
   
-
+  createAndInitDB();
   fetchNeighborhoods();
   fetchCuisines();
 
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       }
   
       if (registration.waiting) {
-        updateReady();
+        updateReady(registration.waiting);
         return;
       }
   
@@ -76,7 +76,9 @@ updateReady = (worker) =>{
   waitingWorker = worker;
 };
 
-
+createAndInitDB = () => {
+  DBHelper.openDataBase();
+}
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -90,6 +92,7 @@ fetchNeighborhoods = () => {
       fillNeighborhoodsHTML();
     }
   });
+
 }
 
 /**
@@ -203,7 +206,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-  li.setAttribute('role','option');
+  li.setAttribute('role','link');
   li.setAttribute('tabindex','0');
   const image = document.createElement('img');
   image.className = 'restaurant-img';

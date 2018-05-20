@@ -8,27 +8,111 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 8000 // Change this to your server port
-    return `http://localhost:${port}/data/restaurants.json`;
+    const port = 1337 // Change this to your server port
+    return `http://localhost:${port}/restaurants`;
   }
 
   /**
+   * Creates IndexedDB
+   */
+  static createDB(){
+    
+     this._dbPromise = idb.open('restaurants-db', 1, function(upgradeDb) {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          // a placeholder case so that the switch block will
+          // execute when the database is first created
+          // (oldVersion is 0)
+        case 1:
+          upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+          var store = upgradeDb.transaction.objectStore('restaurants');
+          store.createIndex('updatedAt', 'updatedAt');
+      }
+      
+    });
+    this._NUMBER_OF_UP_TO_DATE_RESTAURANTS = 10;
+  }
+
+  /**
+   * Adds fetched restaurants to local storage and saves 10 up-to-date restaurants.
+   * @param {*} restaurants - fecthed restaurants.
+   */
+  static addRestaurantsToDB(restaurants){
+    const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
+    this._dbPromise.then(function(db){
+      var tx = db.transaction('restaurants', 'readwrite');
+      var store = tx.objectStore('restaurants');
+      restaurants.forEach(function(res){
+        store.put(res);
+      });
+
+      store.index('updatedAt').openCursor(null,'prev').then(function(cursor){
+        return cursor.advance(_NUMBER_OF_UP_TO_DATE_RESTAURANTS);
+      }).then(function deleteRest(cursor){
+        if(!cursor) return;
+        cursor.delete();
+        return cursor.continue().then(deleteRest);
+      })
+    });
+   
+  }
+  
+   /**
+   * Open IndexedDB.
+   */
+   static openDataBase(){
+
+    if (!('indexedDB' in window)) {
+      console.log('This browser doesn\'t support IndexedDB');
+      return;
+    }
+    DBHelper.createDB();
+   
+   }
+
+   /**
    * Fetch all restaurants.
    */
+
   static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
+
+    let indexedDBIsEmpty = false;
+    if(!this._dbPromise){
+      this._dbPromise = idb.open('restaurants-db', 1, function(upgradeDb) {});
+    }
+    this._dbPromise.then(function(db){
+
+      var tx = db.transaction('restaurants');
+      var store = tx.objectStore('restaurants');
+
+      return store.getAll();
+    }).then(function(rests){
+      const restaurants = rests;
+      if(!rests.length){
+        DBHelper.getRestaurantsFromNetwork(callback);
       }
-    };
-    xhr.send();
+      callback(null, restaurants);
+    }).catch(function(err){
+      DBHelper.getRestaurantsFromNetwork(callback);
+    });
+  }
+
+  /**
+   * Fetches restaurant information from the network
+   * @param {*} callback 
+   */
+  static getRestaurantsFromNetwork(callback){
+    fetch(DBHelper.DATABASE_URL).
+    then(response => response.json())
+    .then(function(res){
+      const restaurants = res;
+      DBHelper.addRestaurantsToDB(restaurants);
+      callback(null, restaurants);
+    })
+    .catch(function(err){
+      const error = (`Request failed. Returned status of ${err}`);
+      callback(error, null);
+    });
   }
 
   /**
@@ -150,7 +234,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    return (`/dist/img/${restaurant.photograph}.jpg`);
   }
 
   /**

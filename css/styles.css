@@ -18,7 +18,7 @@ ul, li {
 	color: #333;
 }
 a {
-	color: orange;
+	color: #c3ad9d;
 	text-decoration: none;
 }
 a:hover, a:focus {
@@ -40,8 +40,9 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   min-height: 100%;
 }
 #footer {
-  background-color: #444;
-  color: #aaa;
+  color: rgb(177, 177, 177);
+  background: rgb(68, 68, 68);
+  opacity: 1;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 25px;
@@ -94,7 +95,9 @@ nav h1 a {
 
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
+  color: rgb(0, 80, 150);
+  background: rgb(238, 238, 238);
+  opacity: 1;
     text-decoration: none;
 }
 
@@ -113,7 +116,7 @@ nav h1 a {
 .filter-options {
   max-width: 100%;
   height: auto;
-  background-color: #3397DB;
+  background-color: #007dbb;
   align-items: center;
   padding: 2px 0px;
 }
@@ -168,7 +171,7 @@ nav h1 a {
   transform: scale(1.1);
 }
 #restaurants-list li h2 {
-  color: #f18200;
+  color: #b56000;
   font-family: Arial,sans-serif;
   font-size: 14pt;
   font-weight: 200;
@@ -182,9 +185,9 @@ nav h1 a {
   font-size: 11pt;
 }
 #restaurants-list li a {
-  background-color: orange;
+  background-color: #FFD300;
   border-bottom: 3px solid #eee;
-  color: #fff;
+  color: #4D4000;
   display: inline-block;
   font-size: 10pt;
   margin: 15px 0 0;
@@ -231,7 +234,7 @@ nav h1 a {
   max-width: 100%;
 }
 #restaurant-name {
-  color: #f18200;
+  color: rgb(171, 90, 0);
   font-family: Arial,sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -285,7 +288,7 @@ nav h1 a {
 }
 
 #reviews-container h2 {
-  color: #f58500;
+  color: #7f4200;
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
@@ -327,10 +330,10 @@ nav h1 a {
 #reviews-list li p:nth-child(3){
   margin-left: 17px;
   display: inline-block;
-  background-color: orange;
+  background-color: #FFEF00;
   text-transform: uppercase;
   padding: 5px;
-  color: white;
+  color: #595400;
   border-radius: 5px;
 }
 #reviews-list li p:last-child{
@@ -341,7 +344,9 @@ nav h1 a {
   width: 100%;
 }
 #restaurant-hours td {
-  color: #666;
+  color: rgb(69, 69, 69);
+  background: rgb(221, 221, 221);
+  opacity: 1;
   padding: 2px;
 }
 #restaurant-hours tr:nth-child(even){
@@ -376,7 +381,7 @@ ol#breadcrumb {
 
 #neighborhoods-select:focus,
 #cuisines-select:focus{
-  border: 4px solid orange;
+  border: 4px solid #FFD300;
 }
 /* ================= resturant details page ================= */
 
@@ -446,7 +451,7 @@ ol#breadcrumb {
 /* Taken from https://codepen.io/nelsonleite/pen/Xdpqyb?q=page+not+found&limit=all&type=type-pens */
 
 .err-return-home-link{
-  color: orange;
+  color: #fcd28f;
   text-transform: uppercase;
 }
 
