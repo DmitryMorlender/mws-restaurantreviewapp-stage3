@@ -230,11 +230,34 @@ class DBHelper {
     return (`./restaurant.html?id=${restaurant.id}`);
   }
 
+  static imageUrlsForSmallRestaurant(restaurant){
+    if(!restaurant.photograph)
+    return (`dist/img/default-image_450-300w.webp`);
+  return (`/dist/img/${restaurant.photograph}.webp`);
+  }
+
+  static imageUrlsForBigRestaurant(restaurant){
+    if(!restaurant.photograph)
+    return (`dist/img/default-image_450-600w.webp`);
+  return (`/dist/img/${restaurant.photograph}-600w.webp`);
+  }
+
   /**
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/dist/img/${restaurant.photograph}.jpg`);
+    if(!restaurant.photograph)
+      return (`/dist/img/default-image_450.webp`);
+    return (`/dist/img/${restaurant.photograph}.webp`);
+  }
+
+  /**
+   * Restaurant image URL.
+   */
+  static imageUrlsForRestaurant(restaurant) {
+    if(!restaurant.photograph)
+      return (`/dist/img/default-image_450.webp`);
+    return (`/dist/img/${restaurant.photograph}.webp`);
   }
 
   /**

@@ -14,6 +14,7 @@ let imageminGiflossy = require('imagemin-giflossy');
 let imageminWebp = require('imagemin-webp');
 let webp = require('gulp-webp');
 let rename = require('gulp-rename');
+let responsive = require('gulp-responsive-images');
 
 const del = require('del');
 const AUTOPREFIXER_BROWSERS = [
@@ -40,11 +41,68 @@ gulp.task('styles', function () {
       .pipe(gulp.dest('dist/css'))
   });
 
+  
+  gulp.task('webp', () =>
+      gulp.src('img/*.*')
+      .pipe(webp({
+          quality: 80,
+          preset: 'photo',
+          method: 6
+      }))
+      .pipe(gulp.dest('dist/img'))
+  );
+
+  gulp.task('webp-in-dist', () =>
+  gulp.src('dist/img/*.*')
+  .pipe(webp({
+      quality: 80,
+      preset: 'photo',
+      method: 6
+  }))
+  .pipe(gulp.dest('dist/img'))
+);
+
+
   gulp.task('compress-images', function () {
     gulp.src('img/*.*')
       .pipe(image())
       .pipe(gulp.dest('dist/img'));
   });
+
+  gulp.task('compress-webp-images-in-dist', function () {
+    gulp.src('dist/img/*.*')
+      .pipe(image())
+      .pipe(gulp.dest('dist/img'));
+  });
+
+  gulp.task('resize-images', function () {
+    gulp.src('img/*.*')
+      .pipe(responsive({
+        'default-image_450.png': [{
+          width: 300,
+          rename: {suffix: '-300w'},
+          quality: 70
+        }, {
+          width: 600,
+          rename: {suffix: '-600w'},
+          quality: 75
+        }],
+        '*.jpg': [{
+          width: 300,
+          reanme: {suffix: '-300w'},
+          quality: 70
+        },{
+          width: 600,
+          rename : {suffix: '-600w'},
+          quality: 75
+        }],
+      },{
+        imageMagick: true
+      }))
+      .pipe(gulp.dest('dist/img'));
+  });
+
+  
 
 
 
