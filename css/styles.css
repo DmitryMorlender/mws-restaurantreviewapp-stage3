@@ -216,6 +216,15 @@ nav h1 a {
   width: 100%;
   z-index: 1000;
 }
+
+section.main-page-map-container{
+  height: 400px;
+  background-image: url(../../dist/img/google_static.png);
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .inside #map-container {
   padding: 25px;
   border-bottom: 1px solid #d9d9d9;

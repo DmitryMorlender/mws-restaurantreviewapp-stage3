@@ -70,6 +70,14 @@ trackInstalling = (worker) => {
   });
 };
 
+swap_map = () => {    
+  if (document.getElementById('map').style.display === 'none')      
+  {        
+  document.getElementById('map').style.display = 'block';       
+   //document.getElementById('static_map').style.display = 'none'      
+  }    
+  }
+
 updateReady = (worker) =>{
   let x = document.getElementById("toast")
   x.className = "show";
@@ -209,29 +217,18 @@ createRestaurantHTML = (restaurant) => {
   li.setAttribute('role','link');
   li.setAttribute('tabindex','0');
 
-//   <picture>
-//   <source media='(min-width: 401px)'
-//           srcset='images/photo-big.jpg'/>
-//   <source media='(max-width: 400px)'
-//           srcset='images/photo-tall.jpg'/>
-//   <img src='images/photo-small.jpg'/>
-// </picture>
-const picture = document.createElement('picture');
-picture.className = 'restaurant-img';
-const smallSource = document.createElement('source');
-smallSource.setAttribute('media','(max-width: 1000px)');
-smallSource.setAttribute('srcset',DBHelper.imageUrlsForSmallRestaurant(restaurant));
+  const picture = document.createElement('picture');
+  picture.className = 'restaurant-img';
+  const smallSource = document.createElement('source');
+  smallSource.setAttribute('media','(max-width: 1000px)');
+  smallSource.setAttribute('srcset',DBHelper.imageUrlsForSmallRestaurant(restaurant));
 
-picture.appendChild(smallSource);
-const bigSource = document.createElement('source');
-bigSource.setAttribute('media','(min-width: 1001px)');
-bigSource.setAttribute('srcset',DBHelper.imageUrlsForBigRestaurant(restaurant));
+  picture.appendChild(smallSource);
+  const bigSource = document.createElement('source');
+  bigSource.setAttribute('media','(min-width: 1001px)');
+  bigSource.setAttribute('srcset',DBHelper.imageUrlsForBigRestaurant(restaurant));
 
-picture.appendChild(bigSource);
-/* image.src = DBHelper.imageUrlForRestaurant(restaurant);
-image.setAttribute('alt','picture of ' + restaurant.name + " " + "Restaurant");
-image.setAttribute('tabindex','0');  */
-
+  picture.appendChild(bigSource);
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.setAttribute('src',DBHelper.imageUrlsForRestaurant(restaurant));

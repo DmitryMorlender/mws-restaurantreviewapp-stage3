@@ -18,8 +18,9 @@
   </header>
 
   <main id="maincontent">
-    <section id="map-container" tabindex="-1">
-      <div id="map" tabindex="0" role="application" aria-label="map of restaurants"></div>
+    <section id="map-container" class="main-page-map-container" tabindex="-1" onclick="swap_map()">
+      <div id="map" tabindex="0" role="application" aria-label="map of restaurants" style="display:none;"></div>
+      <!-- <img src="dist/img/google_static.png" /> -->
     </section>
     <section tabindex="-1">
       <div class="filter-options flex-container" tabindex="-1">
@@ -52,7 +53,7 @@
   <script charset="utf-8" src="js/idb.js"></script>
   <script charset="utf-8" src="js/dbhelper.js"></script>
   <script charset="utf-8" src="js/main.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCH6DVFw73kW7ZuyWATZkAay2bLtDRC79Q&libraries=places&callback=initMap"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCH6DVFw73kW7ZuyWATZkAay2bLtDRC79Q&libraries=places&callback=initMap"></script>
 
 
   <footer id="footer">

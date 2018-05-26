@@ -9,36 +9,37 @@
   ];
   const urlsToCache = [
     '/',
-    '/css/styles.css',
-    '/js/main.js',
-    '/js/idb.js',
-    '/js/dbhelper.js',
-    '/js/restaurant_info.js',
+    'dist/css/styles.min.css',
+    'js/main.js',
+    'js/idb.js',
+    'js/dbhelper.js',
+    'js/restaurant_info.js',
     '/index.html',
     '/restaurant.html',
-    'error.html',
-    '/dist/img/1.webp',
-    '/dist/img/1-600w.webp',
-    '/dist/img/2.webp',
-    '/dist/img/2-600w.webp',
-    '/dist/img/3.webp',
-    '/dist/img/3-600w.webp',
-    '/dist/img/4.webp',
-    '/dist/img/4-600w.webp',
-    '/dist/img/5.webp',
-    '/dist/img/5-600w.webp',
-    '/dist/img/6.webp',
-    '/dist/img/6-600w.webp',
-    '/dist/img/7.webp',
-    '/dist/img/7-600w.webp',
-    '/dist/img/8.webp',
-    '/dist/img/8-600w.webp',
-    '/dist/img/9.webp',
-    '/dist/img/9-600w.webp',
-    '/dist/img/10.webp',
-    '/dist/img/10-600w.webp',
-    '/dist/img/default-image_450-300w.webp',
-    '/dist/img/default-image_450-600w.webp',
+    '/error.html',
+    'dist/img/1.webp',
+    'dist/img/1-600w.webp',
+    'dist/img/2.webp',
+    'dist/img/2-600w.webp',
+    'dist/img/3.webp',
+    'dist/img/3-600w.webp',
+    'dist/img/4.webp',
+    'dist/img/4-600w.webp',
+    'dist/img/5.webp',
+    'dist/img/5-600w.webp',
+    'dist/img/6.webp',
+    'dist/img/6-600w.webp',
+    'dist/img/7.webp',
+    'dist/img/7-600w.webp',
+    'dist/img/8.webp',
+    'dist/img/8-600w.webp',
+    'dist/img/9.webp',
+    'dist/img/9-600w.webp',
+    'dist/img/10.webp',
+    'dist/img/10-600w.webp',
+    'dist/img/default-image_450-300w.webp',
+    'dist/img/default-image_450-600w.webp',
+    'dist/img/google_static.png'
   ];
   
   self.addEventListener('install', function(event) {
@@ -68,20 +69,32 @@
   
   self.addEventListener('fetch', function(event) {
    // 
-      event.respondWith(
-          caches.open(CACHE_NAME).then(function(cache) {
-            return cache.match(event.request).then(function(response) {
-              let fetchPromise = fetch(event.request).then(function(networkResponse) {
-                cache.put(event.request, networkResponse.clone());
-                return networkResponse;
-              })
-              return response || fetchPromise;
-            })
-        }).catch(function(error) {
-          console.log('Error, ', error);
-          return caches.match('error.html');
-        })
-      );
+
+   var requestUrl = new URL(event.request.url);
+   
+   
+     if (requestUrl.origin === location.origin) {
+  
+        event.respondWith(
+            caches.open(CACHE_NAME).then(function(cache) {
+              return cache.match(event.request).then(function(response) {
+                let fetchPromise = fetch(event.request).then(function(networkResponse) {
+                  cache.put(event.request, networkResponse.clone());
+                  return networkResponse;
+                })
+                return response || fetchPromise;
+              }).catch(function(error){
+                console.log('Fetch Error: , ', error);
+                return caches.match('/error.html');
+              });
+          }).catch(function(error) {
+            console.log('Error, ', error);
+            return caches.match('/error.html');
+          })
+        );
+      }
+
+      return;
     });
   
   self.addEventListener('message', function(event) {
