@@ -162,7 +162,7 @@ submitHandlerFunction = (e) => {
   });
 
   const ul = document.getElementById('reviews-list');
-  customerReview.filledAt = new Date();
+  customerReview.createdAt = new Date();
   ul.appendChild(createReviewHTML(customerReview)); 
 }
 
@@ -329,7 +329,7 @@ fillReviewsHTML = (restaurant) => {
     });
     container.appendChild(ul);
   }).catch((err) =>{
-    console.log('DIMONNNNN');
+    console.log(err);
   });
 
 
