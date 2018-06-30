@@ -47,7 +47,7 @@ importScripts('/js/idb.js');
     'dist/img/10-600w.webp',
     'dist/img/default-image_450-300w.webp',
     'dist/img/default-image_450-600w.webp',
-    'dist/img/google_static.png'
+    'dist/img/google_static.jpg'
   ];
   
   
@@ -148,8 +148,8 @@ importScripts('/js/idb.js');
             let fetchPromise = fetch(event.request).then(function(networkResponse) {
               cache.put(event.request, networkResponse.clone());
               return networkResponse;
-            }).catch(function(response){
-              console.log(response);
+            }).catch(function(err){
+              return response;
             });
             return fetchPromise || response;
           }).catch(function(error){
@@ -174,6 +174,7 @@ importScripts('/js/idb.js');
                   return networkResponse;
                 }).catch(function(response){
                   console.log(response);
+                  return caches.match('/error.html');
                 });
                 return response || fetchPromise;
               }).catch(function(error){

@@ -15,6 +15,8 @@ let imageminWebp = require('imagemin-webp');
 let webp = require('gulp-webp');
 let rename = require('gulp-rename');
 let responsive = require('gulp-responsive-images');
+let minifyjs = require('gulp-js-minify');
+let gm = require('gulp-gm');
 
 const del = require('del');
 const AUTOPREFIXER_BROWSERS = [
@@ -41,7 +43,12 @@ gulp.task('styles', function () {
       .pipe(gulp.dest('dist/css'))
   });
 
-  
+  gulp.task('minify-js', function(){
+    gulp.src('js/*.js')
+      .pipe(minifyjs())
+      .pipe(gulp.dest('dist/js/'));
+  });
+
   gulp.task('webp', () =>
       gulp.src('img/*.*')
       .pipe(webp({
@@ -55,13 +62,22 @@ gulp.task('styles', function () {
   gulp.task('webp-in-dist', () =>
   gulp.src('dist/img/*.*')
   .pipe(webp({
-      quality: 80,
+      quality: 70,
       preset: 'photo',
       method: 6
   }))
   .pipe(gulp.dest('dist/img'))
 );
 
+gulp.task('png-to-jpg',function(){
+  gulp.src('img/google_static.png')
+  .pipe(gm(function (gmfile) {
+ 
+    return gmfile.setFormat('jpg');
+ 
+  }))
+  .pipe(gulp.dest('img'));
+});
 
   gulp.task('compress-images', function () {
     gulp.src('img/*.*')

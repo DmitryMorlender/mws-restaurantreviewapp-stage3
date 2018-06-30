@@ -3,7 +3,12 @@ let restaurant;
 var map;
 let ratingStars;
 
-
+window.addEventListener('online', function(e) {
+  navigator.serviceWorker.ready.then(function(swRegistration) {
+    swRegistration.sync.register('review-submission');
+  
+  }); 
+}, false);
 document.addEventListener('DOMContentLoaded', (event) => {
   
   ratingStars = document.querySelectorAll('.rating-container span.fa-star');
@@ -157,7 +162,7 @@ submitHandlerFunction = (e) => {
   });
 
   const ul = document.getElementById('reviews-list');
-  customerReview.createdAt = new Date();
+  customerReview.filledAt = new Date();
   ul.appendChild(createReviewHTML(customerReview)); 
 }
 
@@ -218,6 +223,9 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const favouriteStar = document.createElement('span');
   favouriteStar.classList.add('fa');
   favouriteStar.classList.add('fa-star');
+  favouriteStar.setAttribute('role','button');
+  favouriteStar.setAttribute('aria-label','rating star');
+  favouriteStar.setAttribute('title','press a star to rate');
   if(restaurant.is_favorite == 'true'){
     favouriteStar.classList.add('checked');
   }
@@ -320,6 +328,8 @@ fillReviewsHTML = (restaurant) => {
       ul.appendChild(createReviewHTML(review));
     });
     container.appendChild(ul);
+  }).catch((err) =>{
+    console.log('DIMONNNNN');
   });
 
 

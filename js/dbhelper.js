@@ -31,7 +31,6 @@ class DBHelper {
       }
       
     });
-    this._NUMBER_OF_UP_TO_DATE_RESTAURANTS = 10;
   }
 
   static createDefferdReviewsDB(){
@@ -51,22 +50,10 @@ class DBHelper {
   }
 
   static getReviewsDB(){
-    if(this._dbPromiseReviews){
-      return Promise.resolve( this._dbPromiseReviews);
+    if(!this._dbPromiseReviews){
+      return this._dbPromiseReviews = idb.open('reviews-db', 1, function(upgradeDb) {});
     }
-
-    return idb.open('reviews-db', 1, function(upgradeDb) {
-      switch (upgradeDb.oldVersion) {
-        case 0:
-          // a placeholder case so that the switch block will
-          // execute when the database is first created
-          // (oldVersion is 0)
-        case 1:
-          upgradeDb.createObjectStore('reviews',{ autoIncrement : true, keyPath: 'id' });
-          //var store = upgradeDb.transaction.objectStore('reviews');
-      }
-      
-    });
+    return this._dbPromiseReviews;
   }
 
   static getRestaurantsDB(){
@@ -74,20 +61,7 @@ class DBHelper {
       return Promise.resolve( this._dbPromiseRestaurants);
     }
 
-    return this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {
-      switch (upgradeDb.oldVersion) {
-        case 0:
-          // a placeholder case so that the switch block will
-          // execute when the database is first created
-          // (oldVersion is 0)
-        case 1:
-          upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
-          var store = upgradeDb.transaction.objectStore('restaurants');
-          store.createIndex('updatedAt', 'updatedAt');
-      }
-      
-    });
-    this._NUMBER_OF_UP_TO_DATE_RESTAURANTS = 10;
+    return this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {});
   }
 
   /**
@@ -95,7 +69,6 @@ class DBHelper {
    * @param {*} review - Defered review.
    */
   static addReviewsToDB(review){
-    const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
     return this.getReviewsDB().then(function(db){
       var tx = db.transaction('reviews', 'readwrite');
       var store = tx.objectStore('reviews');
@@ -114,7 +87,6 @@ class DBHelper {
    * @param {*} review - Defered review.
    */
   static getReviewsFromDB(){
-    const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
     return this.getReviewsDB().then(function(db){
       var tx = db.transaction('reviews', 'readonly');
       var store = tx.objectStore('reviews');
@@ -131,7 +103,6 @@ class DBHelper {
    * @param {*} restaurants - fecthed restaurants.
    */
   static addRestaurantsToDB(restaurants){
-    const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
     if(!this._dbPromiseRestaurants){
       this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {});
     }
@@ -143,7 +114,7 @@ class DBHelper {
       });
 
       store.index('updatedAt').openCursor(null,'prev').then(function(cursor){
-        return cursor.advance(_NUMBER_OF_UP_TO_DATE_RESTAURANTS);
+        return cursor.advance(10);
       }).then(function deleteRest(cursor){
         if(!cursor) return;
         cursor.delete();
@@ -182,7 +153,7 @@ class DBHelper {
       if(!this._dbPromiseRestaurants){
         this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {});
       }
-      DBHelper.getRestaurantsDB().then(function(db){
+      this._dbPromiseRestaurants.then(function(db){
   
         var tx = db.transaction('restaurants');
         var store = tx.objectStore('restaurants');

@@ -1,9 +1,9 @@
 
 let restaurants,
   neighborhoods,
-  cuisines
-var map
-var markers = []
+  cuisines;
+let map;
+let markers = [];
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
       },300);
     
+      document.getElementById('map-container').addEventListener('click', () => {
+          loadGoogleMaps();
+      });
 });
 
 var waitingWorker;
@@ -99,6 +102,15 @@ trackInstalling = (worker) => {
     }
   });
 };
+
+
+
+loadGoogleMaps = () => {
+  fetch('https://maps.googleapis.com/maps/api/js?key=AIzaSyCH6DVFw73kW7ZuyWATZkAay2bLtDRC79Q&libraries=places&callback=initMap');
+}
+
+
+
 
 swap_map = () => {    
   if (document.getElementById('map').style.display === 'none')      
@@ -226,7 +238,10 @@ resetRestaurants = (restaurants) => {
   ul.innerHTML = '';
 
   // Remove all map markers
-  self.markers.forEach(m => m.setMap(null));
+  if(self.markers){
+    self.markers.forEach(m => m.setMap(null));
+  }
+  
   self.markers = [];
   self.restaurants = restaurants;
 }
@@ -295,6 +310,9 @@ createRestaurantHTML = (restaurant) => {
   const favouriteStar = document.createElement('span');
   favouriteStar.classList.add('fa');
   favouriteStar.classList.add('fa-star');
+  favouriteStar.setAttribute('role','button');
+  favouriteStar.setAttribute('aria-label','rating star');
+  favouriteStar.setAttribute('title','press a star to rate');
   if(restaurant.is_favorite == 'true'){
     favouriteStar.classList.add('checked');
   }
