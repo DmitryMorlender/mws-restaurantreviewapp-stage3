@@ -1,3 +1,4 @@
+
 /**
  * Common database helper functions.
  */
@@ -17,7 +18,63 @@ class DBHelper {
    */
   static createDB(){
     
-     this._dbPromise = idb.open('restaurants-db', 1, function(upgradeDb) {
+     this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          // a placeholder case so that the switch block will
+          // execute when the database is first created
+          // (oldVersion is 0)
+        case 1:
+          upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+          var store = upgradeDb.transaction.objectStore('restaurants');
+          store.createIndex('updatedAt', 'updatedAt');
+      }
+      
+    });
+    this._NUMBER_OF_UP_TO_DATE_RESTAURANTS = 10;
+  }
+
+  static createDefferdReviewsDB(){
+    
+     this._dbPromiseReviews = idb.open('reviews-db', 1, function(upgradeDb) {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          // a placeholder case so that the switch block will
+          // execute when the database is first created
+          // (oldVersion is 0)
+        case 1:
+          upgradeDb.createObjectStore('reviews',{ autoIncrement : true, keyPath: 'id' });
+          //var store = upgradeDb.transaction.objectStore('reviews');
+      }
+      
+    });
+  }
+
+  static getReviewsDB(){
+    if(this._dbPromiseReviews){
+      return Promise.resolve( this._dbPromiseReviews);
+    }
+
+    return idb.open('reviews-db', 1, function(upgradeDb) {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          // a placeholder case so that the switch block will
+          // execute when the database is first created
+          // (oldVersion is 0)
+        case 1:
+          upgradeDb.createObjectStore('reviews',{ autoIncrement : true, keyPath: 'id' });
+          //var store = upgradeDb.transaction.objectStore('reviews');
+      }
+      
+    });
+  }
+
+  static getRestaurantsDB(){
+    if(this._dbPromiseRestaurants){
+      return Promise.resolve( this._dbPromiseRestaurants);
+    }
+
+    return this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {
       switch (upgradeDb.oldVersion) {
         case 0:
           // a placeholder case so that the switch block will
@@ -34,12 +91,51 @@ class DBHelper {
   }
 
   /**
+   * Adds defered review to local storage and saves 10 up-to-date.
+   * @param {*} review - Defered review.
+   */
+  static addReviewsToDB(review){
+    const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
+    return this.getReviewsDB().then(function(db){
+      var tx = db.transaction('reviews', 'readwrite');
+      var store = tx.objectStore('reviews');
+      
+      console.log('Putting review into IndexedDB');
+      
+      console.log('Review put into IndexedDB ' + review);
+     store.put(review);
+     return tx.complete;
+    });
+   
+  }
+
+  /**
+   * Adds defered review to local storage and saves 10 up-to-date.
+   * @param {*} review - Defered review.
+   */
+  static getReviewsFromDB(){
+    const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
+    return this.getReviewsDB().then(function(db){
+      var tx = db.transaction('reviews', 'readonly');
+      var store = tx.objectStore('reviews');
+      
+      console.log('Getting reviews from IndexedDB');
+     
+     return store.getAll();
+    });
+   
+  }
+
+  /**
    * Adds fetched restaurants to local storage and saves 10 up-to-date restaurants.
    * @param {*} restaurants - fecthed restaurants.
    */
   static addRestaurantsToDB(restaurants){
     const _NUMBER_OF_UP_TO_DATE_RESTAURANTS = this._NUMBER_OF_UP_TO_DATE_RESTAURANTS;
-    this._dbPromise.then(function(db){
+    if(!this._dbPromiseRestaurants){
+      this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {});
+    }
+    this._dbPromiseRestaurants.then(function(db){
       var tx = db.transaction('restaurants', 'readwrite');
       var store = tx.objectStore('restaurants');
       restaurants.forEach(function(res){
@@ -76,11 +172,47 @@ class DBHelper {
 
   static fetchRestaurants(callback) {
 
+    DBHelper.getRestaurantsFromNetwork().then((restaurants)=>{
+
+
+      DBHelper.addRestaurantsToDB(restaurants);
+      callback(null, restaurants);
+
+    }).catch((err)=>{
+      if(!this._dbPromiseRestaurants){
+        this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {});
+      }
+      DBHelper.getRestaurantsDB().then(function(db){
+  
+        var tx = db.transaction('restaurants');
+        var store = tx.objectStore('restaurants');
+  
+        return store.getAll();
+      }).then(function(rests){
+        const restaurants = rests;
+        if(rests.length){
+          callback(null, restaurants);
+        }else{
+          const error = (`Request failed. Returned status of ${err}`);
+          callback(error, null);
+        }
+        
+    });
+  });
+
+  }
+
+  /**
+   * updates restaurant favourite in case there is no connection
+   * @param {*} callback 
+   */
+  static updateRestaurantFavourite(restaurant){
+    
     let indexedDBIsEmpty = false;
-    if(!this._dbPromise){
-      this._dbPromise = idb.open('restaurants-db', 1, function(upgradeDb) {});
+    if(!this._dbPromiseRestaurants){
+      this._dbPromiseRestaurants = idb.open('restaurants-db', 1, function(upgradeDb) {});
     }
-    this._dbPromise.then(function(db){
+    this._dbPromiseRestaurants.then(function(db){
 
       var tx = db.transaction('restaurants');
       var store = tx.objectStore('restaurants');
@@ -88,13 +220,18 @@ class DBHelper {
       return store.getAll();
     }).then(function(rests){
       const restaurants = rests;
-      if(!rests.length){
-        DBHelper.getRestaurantsFromNetwork(callback);
-      }
-      callback(null, restaurants);
+      restaurants.forEach((res) =>{
+        if(res.restaurant_id == restaurant.id){
+          let updatedRes = res;
+          updatedRes.is_favourite = restaurant.is_favourite;
+          store.delete(res);
+          store.put(updatedRes);
+        }
+      });
     }).catch(function(err){
-      DBHelper.getRestaurantsFromNetwork(callback);
+      console.log(err);
     });
+
   }
 
   /**
@@ -102,17 +239,9 @@ class DBHelper {
    * @param {*} callback 
    */
   static getRestaurantsFromNetwork(callback){
-    fetch(DBHelper.DATABASE_URL).
-    then(response => response.json())
-    .then(function(res){
-      const restaurants = res;
-      DBHelper.addRestaurantsToDB(restaurants);
-      callback(null, restaurants);
-    })
-    .catch(function(err){
-      const error = (`Request failed. Returned status of ${err}`);
-      callback(error, null);
-    });
+    return fetch(DBHelper.DATABASE_URL).
+    then(response => response.json());
+  
   }
 
   /**

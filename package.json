@@ -39,5 +39,8 @@
     "imagemin-pngquant": "^5.1.0",
     "imagemin-webp": "^4.1.0",
     "imagemin-zopfli": "^5.1.0"
+  },
+  "dependencies": {
+    "rater-js": "^0.5.8"
   }
 }

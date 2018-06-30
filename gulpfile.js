@@ -102,7 +102,9 @@ gulp.task('styles', function () {
       .pipe(gulp.dest('dist/img'));
   });
 
-  
+  gulp.task('watch', function() {
+    gulp.watch('css/styles.css', ['styles'])
+});
 
 
 

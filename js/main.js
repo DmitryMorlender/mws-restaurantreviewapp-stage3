@@ -1,3 +1,4 @@
+
 let restaurants,
   neighborhoods,
   cuisines
@@ -10,13 +11,15 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   
   
+  
   createAndInitDB();
   fetchNeighborhoods();
   fetchCuisines();
+  createReviewsDB();
 
   if(!navigator.serviceWorker) return;
   
-    navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(function(registration) {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
       if (!navigator.serviceWorker.controller) {
         return;
       }
@@ -58,6 +61,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
       });
     }
+
+      setTimeout(function(){
+        document.querySelectorAll('.fa.fa-star').forEach((item) => {
+          item.addEventListener('click',() => {
+            let resID = item.getAttribute('res-id');
+            
+            const isFavourite = item.classList.contains('checked');
+
+            item.classList.toggle('checked');
+            const url = 'http://localhost:1337/restaurants/' + resID + '/?is_favorite=' + !isFavourite;
+            fetch(url,{
+              method: 'PUT'
+            }).then((response) => {
+              console.log(response);
+              return response.json();
+            }).then((data) => {
+              console.log(data);
+            }).catch((err) => {
+              let resInfo = {'id' : resID, 'is_favourite' : !isFavourite};
+              DBHelper.updateRestaurantFavourite(resInfo);
+            });
+
+
+          });
+        });
+      },300);
+    
 });
 
 var waitingWorker;
@@ -88,6 +118,9 @@ createAndInitDB = () => {
   DBHelper.openDataBase();
 }
 
+createReviewsDB = () => {
+  DBHelper.createDefferdReviewsDB();
+}
 /**
  * Fetch all neighborhoods and set their HTML.
  */
@@ -256,8 +289,21 @@ createRestaurantHTML = (restaurant) => {
   more.innerHTML = 'View Details';
   more.setAttribute('aria-describedby',restaurant.id);
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
 
+  const favouriteContainer = document.createElement('div');
+  favouriteContainer.classList.add('favourite-container');
+  const favouriteStar = document.createElement('span');
+  favouriteStar.classList.add('fa');
+  favouriteStar.classList.add('fa-star');
+  if(restaurant.is_favorite == 'true'){
+    favouriteStar.classList.add('checked');
+  }
+  favouriteStar.setAttribute('res-id',restaurant.id);
+  favouriteContainer.appendChild(more);
+  favouriteContainer.appendChild(favouriteStar);
+
+  //li.append(more);
+  li.append(favouriteContainer);
   return li
 }
 
